@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Countdown Timer / カウントダウンタイマー</title>
+<meta name="description" content="旅行・誕生日・締切まで、あと何日何時間かをリアルタイムで表示するカウントダウンタイマー。">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4214020669195548"
+     crossorigin="anonymous"></script>
+<style>
+  :root {
+    --bg: #101425; --card: #1b2038; --text: #f2f3f8; --sub: #949bbd;
+    --accent: #6ee7e0; --accent2: #f2a65a; --border: #2b325a;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; font-family: "Hiragino Kaku Gothic ProN", "Segoe UI", Arial, sans-serif;
+    background: var(--bg); color: var(--text); padding: 16px;
+  }
+  .wrap { max-width: 480px; margin: 0 auto; }
+  .top-row { display: flex; justify-content: flex-end; margin-bottom: 4px; }
+  .lang-btn { background: none; border: 1px solid var(--border); color: var(--sub); border-radius: 6px; padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  h1 { font-size: 21px; text-align: center; margin: 4px 0 4px; }
+  .lead { text-align: center; color: var(--sub); font-size: 13px; margin-bottom: 18px; line-height: 1.6; }
+  .card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 14px; }
+  label { display: block; font-size: 13px; color: var(--sub); margin-bottom: 4px; }
+  input { width: 100%; padding: 10px; font-size: 15px; border: 1px solid var(--border); border-radius: 8px; background: #10142a; color: var(--text); }
+  .field { margin-bottom: 12px; }
+  .set-btn { width: 100%; padding: 12px; border: none; border-radius: 10px; font-size: 15px; font-weight: bold; cursor: pointer; background: var(--accent); color: #052422; }
+  #displayCard { display: none; text-align: center; }
+  .event-name { font-size: 15px; color: var(--sub); margin-bottom: 10px; }
+  .countdown-grid { display: flex; justify-content: space-between; gap: 8px; margin: 10px 0; }
+  .countdown-grid .unit { flex: 1; background: #10142a; border-radius: 10px; padding: 12px 4px; }
+  .countdown-grid .num { font-size: 26px; font-weight: bold; color: var(--accent2); }
+  .countdown-grid .label { font-size: 11px; color: var(--sub); margin-top: 2px; }
+  .past-msg { font-size: 18px; font-weight: bold; color: var(--accent); margin: 10px 0; }
+  .copy-btn, .edit-btn { width: 100%; padding: 11px; border: 1px solid var(--border); border-radius: 10px; font-size: 13.5px; cursor: pointer; background: none; color: var(--text); margin-top: 8px; }
+  .footer-links { text-align: center; font-size: 12px; color: var(--sub); margin-top: 4px; line-height: 1.8; }
+  .footer-links a { color: var(--accent2); text-decoration: none; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="top-row"><button class="lang-btn" id="langBtn">EN</button></div>
+  <h1 id="title">⏱️ カウントダウンタイマー</h1>
+  <p class="lead" id="lead">旅行・誕生日・締切まで、あと何日何時間かをリアルタイム表示。</p>
+
+  <div class="card" id="formCard">
+    <div class="field">
+      <label id="nameLabel">イベント名(任意)</label>
+      <input type="text" id="eventName" placeholder="例: 沖縄旅行">
+    </div>
+    <div class="field">
+      <label id="dateLabel">日時</label>
+      <input type="datetime-local" id="eventDate">
+    </div>
+    <button class="set-btn" id="setBtn"></button>
+  </div>
+
+  <div class="card" id="displayCard">
+    <div class="event-name" id="displayName"></div>
+    <div class="countdown-grid" id="countdownGrid">
+      <div class="unit"><div class="num" id="numDays">0</div><div class="label" id="labelDays"></div></div>
+      <div class="unit"><div class="num" id="numHours">0</div><div class="label" id="labelHours"></div></div>
+      <div class="unit"><div class="num" id="numMinutes">0</div><div class="label" id="labelMinutes"></div></div>
+      <div class="unit"><div class="num" id="numSeconds">0</div><div class="label" id="labelSeconds"></div></div>
+    </div>
+    <div class="past-msg" id="pastMsg" style="display:none;"></div>
+    <button class="copy-btn" id="copyBtn"></button>
+    <button class="edit-btn" id="editBtn"></button>
+  </div>
+
+  <p class="footer-links" id="footerLinks"></p>
+</div>
+
+<script>
+  const I18N = {
+    ja: {
+      title: '⏱️ カウントダウンタイマー',
+      lead: '旅行・誕生日・締切まで、あと何日何時間かをリアルタイム表示。',
+      nameLabel: 'イベント名(任意)',
+      namePlaceholder: '例: 沖縄旅行',
+      dateLabel: '日時',
+      setBtn: 'カウントダウン開始',
+      labelDays: '日', labelHours: '時間', labelMinutes: '分', labelSeconds: '秒',
+      defaultName: 'イベント',
+      pastMsg: n => `🎉 ${n} が来ました!`,
+      copyBtn: '結果をコピー',
+      copied: 'コピーしました!',
+      editBtn: '日時を変更する',
+      shareText: (name, d, h, m) => `${name}まであと ${d}日${h}時間${m}分!`,
+      needDate: '日時を入力してください',
+      footerLinks: '他のツールも作っています → <a href="https://naginata-work.github.io/warikan-tool/" target="_blank" rel="noopener">割り勘計算機</a> / <a href="https://naginata-work.github.io/fair-picker/" target="_blank" rel="noopener">公平くじ引き</a> / <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">料理の単位換算</a>'
+    },
+    en: {
+      title: '⏱️ Countdown Timer',
+      lead: 'A live countdown to your trip, birthday, deadline — anything.',
+      nameLabel: 'Event name (optional)',
+      namePlaceholder: 'e.g. Trip to Okinawa',
+      dateLabel: 'Date & time',
+      setBtn: 'Start countdown',
+      labelDays: 'days', labelHours: 'hrs', labelMinutes: 'min', labelSeconds: 'sec',
+      defaultName: 'the event',
+      pastMsg: n => `🎉 ${n} has arrived!`,
+      copyBtn: 'Copy result',
+      copied: 'Copied!',
+      editBtn: 'Change date',
+      shareText: (name, d, h, m) => `${d}d ${h}h ${m}m until ${name}!`,
+      needDate: 'Please choose a date and time',
+      footerLinks: 'Also made these → <a href="https://naginata-work.github.io/warikan-tool/" target="_blank" rel="noopener">Bill Splitter</a> / <a href="https://naginata-work.github.io/fair-picker/" target="_blank" rel="noopener">Fair Picker</a> / <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">Cooking Unit Converter</a>'
+    }
+  };
+
+  function loadLang() { try { return localStorage.getItem('countdownLang'); } catch (e) { return null; } }
+  function saveLang(l) { try { localStorage.setItem('countdownLang', l); } catch (e) {} }
+  function loadSaved() { try { return JSON.parse(localStorage.getItem('countdownSaved') || 'null'); } catch (e) { return null; } }
+  function saveSaved(obj) { try { localStorage.setItem('countdownSaved', JSON.stringify(obj)); } catch (e) {} }
+
+  let lang = loadLang() === 'en' ? 'en' : 'ja';
+  function t() { return I18N[lang]; }
+
+  let targetDate = null;
+  let eventName = '';
+  let tickTimer = null;
+
+  function startCountdown(name, dateVal) {
+    eventName = name || t().defaultName;
+    targetDate = new Date(dateVal);
+    saveSaved({ name: eventName, date: dateVal });
+    document.getElementById('formCard').style.display = 'none';
+    document.getElementById('displayCard').style.display = 'block';
+    document.getElementById('displayName').textContent = eventName;
+    tick();
+    clearInterval(tickTimer);
+    tickTimer = setInterval(tick, 1000);
+  }
+
+  function tick() {
+    const now = new Date();
+    const diff = targetDate - now;
+    const pastMsg = document.getElementById('pastMsg');
+    const grid = document.getElementById('countdownGrid');
+    if (diff <= 0) {
+      grid.style.display = 'none';
+      pastMsg.style.display = 'block';
+      pastMsg.textContent = t().pastMsg(eventName);
+      clearInterval(tickTimer);
+      return;
+    }
+    grid.style.display = 'flex';
+    pastMsg.style.display = 'none';
+    const totalSeconds = Math.floor(diff / 1000);
+    const days = Math.floor(totalSeconds / 86400);
+    const hours = Math.floor((totalSeconds % 86400) / 3600);
+    const minutes = Math.floor((totalSeconds % 3600) / 60);
+    const seconds = totalSeconds % 60;
+    document.getElementById('numDays').textContent = days;
+    document.getElementById('numHours').textContent = hours;
+    document.getElementById('numMinutes').textContent = minutes;
+    document.getElementById('numSeconds').textContent = seconds;
+  }
+
+  document.getElementById('setBtn').addEventListener('click', () => {
+    const name = document.getElementById('eventName').value.trim();
+    const dateVal = document.getElementById('eventDate').value;
+    if (!dateVal) {
+      alert(t().needDate);
+      return;
+    }
+    startCountdown(name, dateVal);
+  });
+
+  document.getElementById('editBtn').addEventListener('click', () => {
+    clearInterval(tickTimer);
+    document.getElementById('displayCard').style.display = 'none';
+    document.getElementById('formCard').style.display = 'block';
+  });
+
+  document.getElementById('copyBtn').addEventListener('click', async () => {
+    if (!targetDate) return;
+    const now = new Date();
+    const diff = Math.max(0, targetDate - now);
+    const totalSeconds = Math.floor(diff / 1000);
+    const d = Math.floor(totalSeconds / 86400);
+    const h = Math.floor((totalSeconds % 86400) / 3600);
+    const m = Math.floor((totalSeconds % 3600) / 60);
+    const text = t().shareText(eventName, d, h, m) + ' ' + location.href;
+    try {
+      await navigator.clipboard.writeText(text);
+      const btn = document.getElementById('copyBtn');
+      const original = btn.textContent;
+      btn.textContent = t().copied;
+      setTimeout(() => { btn.textContent = original; }, 1500);
+    } catch {
+      alert(text);
+    }
+  });
+
+  function renderStaticText() {
+    document.getElementById('title').textContent = t().title;
+    document.getElementById('lead').textContent = t().lead;
+    document.getElementById('nameLabel').textContent = t().nameLabel;
+    document.getElementById('eventName').placeholder = t().namePlaceholder;
+    document.getElementById('dateLabel').textContent = t().dateLabel;
+    document.getElementById('setBtn').textContent = t().setBtn;
+    document.getElementById('labelDays').textContent = t().labelDays;
+    document.getElementById('labelHours').textContent = t().labelHours;
+    document.getElementById('labelMinutes').textContent = t().labelMinutes;
+    document.getElementById('labelSeconds').textContent = t().labelSeconds;
+    document.getElementById('copyBtn').textContent = t().copyBtn;
+    document.getElementById('editBtn').textContent = t().editBtn;
+    document.getElementById('footerLinks').innerHTML = t().footerLinks;
+    if (targetDate) {
+      document.getElementById('displayName').textContent = eventName;
+    }
+  }
+
+  document.getElementById('langBtn').addEventListener('click', () => {
+    lang = lang === 'ja' ? 'en' : 'ja';
+    saveLang(lang);
+    document.getElementById('langBtn').textContent = lang === 'ja' ? 'EN' : 'JA';
+    renderStaticText();
+  });
+
+  document.getElementById('langBtn').textContent = lang === 'ja' ? 'EN' : 'JA';
+  renderStaticText();
+
+  const saved = loadSaved();
+  if (saved && saved.date) {
+    document.getElementById('eventName').value = saved.name === t().defaultName ? '' : saved.name;
+    document.getElementById('eventDate').value = saved.date;
+    if (new Date(saved.date) > new Date()) {
+      startCountdown(saved.name, saved.date);
+    }
+  }
+</script>
+</body>
+</html>
