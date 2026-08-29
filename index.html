@@ -71,7 +71,25 @@
     <button class="edit-btn" id="editBtn"></button>
   </div>
 
+  <div class="card" style="font-size:13px; line-height:1.9; color:var(--sub);">
+    <h2 id="aboutTitle" style="font-size:15px; color:var(--text); margin:0 0 8px;"></h2>
+    <p id="aboutBody1" style="margin:0 0 10px;"></p>
+    <p id="aboutBody2" style="margin:0;"></p>
+  </div>
+
+  <div class="card" style="font-size:13px; line-height:1.9; color:var(--sub);">
+    <h2 id="faqTitle" style="font-size:15px; color:var(--text); margin:0 0 10px;"></h2>
+    <p id="faq1Q" style="margin:0 0 4px; color:var(--text); font-weight:bold;"></p>
+    <p id="faq1A" style="margin:0 0 12px;"></p>
+    <p id="faq2Q" style="margin:0 0 4px; color:var(--text); font-weight:bold;"></p>
+    <p id="faq2A" style="margin:0;"></p>
+  </div>
+
   <p class="footer-links" id="footerLinks"></p>
+  <p style="text-align:center; font-size:11px; color:var(--sub); margin-top:4px;">
+    <a href="https://naginata-work.github.io/" style="color:var(--sub);" id="allToolsLink"></a> ・
+    <a href="https://naginata-work.github.io/privacy.html" style="color:var(--sub);" id="privacyLink"></a>
+  </p>
 </div>
 
 <script>
@@ -91,7 +109,15 @@
       editBtn: '日時を変更する',
       shareText: (name, d, h, m) => `${name}まであと ${d}日${h}時間${m}分!`,
       needDate: '日時を入力してください',
-      footerLinks: '他のツールも作っています → <a href="https://naginata-work.github.io/warikan-tool/" target="_blank" rel="noopener">割り勘計算機</a> / <a href="https://naginata-work.github.io/fair-picker/" target="_blank" rel="noopener">公平くじ引き</a> / <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">料理の単位換算</a>'
+      footerLinks: '他のツールも作っています → <a href="https://naginata-work.github.io/warikan-tool/" target="_blank" rel="noopener">割り勘計算機</a> / <a href="https://naginata-work.github.io/fair-picker/" target="_blank" rel="noopener">公平くじ引き</a> / <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">料理の単位換算</a>',
+      aboutTitle: '使い方について',
+      aboutBody1: '旅行の出発日、友人の誕生日、資格試験の締切など、「あと何日で本番か」を意識したい場面は日常によくあります。日付だけ分かっていても、頭の中で日数を数えるのは意外と面倒です。',
+      aboutBody2: 'イベント名(任意)と日時を入力するだけで、残り日数・時間・分・秒がリアルタイムに動き続けるカウントダウンが表示されます。入力内容はブラウザに保存されるので、同じ端末からアクセスすれば続きから表示されます。',
+      faqTitle: 'よくある質問',
+      faq1Q: '複数のイベントを同時にカウントダウンできる?',
+      faq1A: '現在のバージョンでは一度に1つのイベントを表示する仕様です。「日時を変更する」ボタンから、いつでも別のイベントに切り替えられます。',
+      faq2Q: '設定した日時を過ぎるとどうなる?',
+      faq2A: 'カウントダウンの代わりに「🎉 ○○が来ました!」というメッセージが表示されます。過去の日付を入力した場合も同様です。',
     },
     en: {
       title: '⏱️ Countdown Timer',
@@ -108,7 +134,15 @@
       editBtn: 'Change date',
       shareText: (name, d, h, m) => `${d}d ${h}h ${m}m until ${name}!`,
       needDate: 'Please choose a date and time',
-      footerLinks: 'Also made these → <a href="https://naginata-work.github.io/warikan-tool/" target="_blank" rel="noopener">Bill Splitter</a> / <a href="https://naginata-work.github.io/fair-picker/" target="_blank" rel="noopener">Fair Picker</a> / <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">Cooking Unit Converter</a>'
+      footerLinks: 'Also made these → <a href="https://naginata-work.github.io/warikan-tool/" target="_blank" rel="noopener">Bill Splitter</a> / <a href="https://naginata-work.github.io/fair-picker/" target="_blank" rel="noopener">Fair Picker</a> / <a href="https://naginata-work.github.io/cook-convert/" target="_blank" rel="noopener">Cooking Unit Converter</a>',
+      aboutTitle: 'How it works',
+      aboutBody1: "Whether it's a flight departure, a friend's birthday, or an exam deadline, it's common to want a running sense of how much time is left. Doing that math in your head gets old fast.",
+      aboutBody2: "Enter an optional event name and a date/time, and you'll see a live countdown in days, hours, minutes, and seconds. Your last countdown is saved in the browser, so it picks up where you left off on the same device.",
+      faqTitle: 'FAQ',
+      faq1Q: 'Can I track more than one countdown at once?',
+      faq1A: 'This version shows one event at a time. Use "Change date" whenever you want to switch to a different event.',
+      faq2Q: 'What happens after the date passes?',
+      faq2A: 'The countdown is replaced with a "🎉 [event] has arrived!" message. The same happens if you enter a date that\'s already in the past.',
     }
   };
 
@@ -211,6 +245,18 @@
     document.getElementById('copyBtn').textContent = t().copyBtn;
     document.getElementById('editBtn').textContent = t().editBtn;
     document.getElementById('footerLinks').innerHTML = t().footerLinks;
+    document.getElementById('aboutTitle').textContent = t().aboutTitle;
+    document.getElementById('aboutBody1').textContent = t().aboutBody1;
+    document.getElementById('aboutBody2').textContent = t().aboutBody2;
+    document.getElementById('faqTitle').textContent = t().faqTitle;
+    document.getElementById('faq1Q').textContent = t().faq1Q;
+    document.getElementById('faq1A').textContent = t().faq1A;
+    document.getElementById('faq2Q').textContent = t().faq2Q;
+    document.getElementById('faq2A').textContent = t().faq2A;
+    document.getElementById('allToolsLink').textContent = lang === 'ja' ? '他のツール一覧' : 'All tools';
+    document.getElementById('allToolsLink').href = 'https://naginata-work.github.io/';
+    document.getElementById('privacyLink').textContent = lang === 'ja' ? 'プライバシーポリシー' : 'Privacy policy';
+    document.getElementById('privacyLink').href = 'https://naginata-work.github.io/privacy.html';
     if (targetDate) {
       document.getElementById('displayName').textContent = eventName;
     }
